@@ -1,38 +1,29 @@
-const express = require("express");
+// routes/chat.js
+import express from "express";
+import authenticateToken from "../middleware/auth.js";
+import OpenAI from "openai";
+
 const router = express.Router();
-const OpenAI = require("openai");
-const authenticateToken = require("../middleware/auth");
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Make sure this is in your .env
-});
+export default function createChatRouter(apiKey) {
+  const openai = new OpenAI({ apiKey });
 
-// POST /chat - Protected route
-router.post("/", authenticateToken, async (req, res) => {
-  try {
-    const { message } = req.body;
+  router.post("/", authenticateToken, async (req, res) => {
+    try {
+      const { message } = req.body;
+      if (!message) return res.status(400).json({ message: "Message is required" });
 
-    // Validate message
-    if (!message) return res.status(400).json({ message: "Message is required" });
+      const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: message }],
+      });
 
-    // Call OpenAI API
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: "You are a helpful assistant." },
-        { role: "user", content: message },
-      ],
-    });
+      res.json({ aiResponse: response.choices[0].message.content });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
 
-    // Extract AI response
-    const aiResponse = response.choices[0].message.content;
-
-    res.json({ aiResponse });
-  } catch (err) {
-    console.error(err.response?.data || err.message);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-module.exports = router;
+  return router;
+}
