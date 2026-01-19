@@ -1,20 +1,25 @@
-import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Chat from "./pages/Chat";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-function App() {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    fetch('http://localhost:5000')
-      .then(res => res.text())
-      .then(data => setMessage(data));
-  }, []);
-
+export default function App() {
   return (
-    <div>
-      <h1>AI Chat App</h1>
-      <p>{message}</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <Chat />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
