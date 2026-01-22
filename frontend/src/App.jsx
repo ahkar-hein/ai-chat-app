@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 // import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-// import Chat from "./pages/Chat";
+import Signup from "./pages/Signup/";
+import Chat from "./pages/Chat/";
 // import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
@@ -11,14 +11,14 @@ export default function App() {
         {/* <Route path="/" element={<Login />} /> */}
         <Route path="/signup" element={<Signup />} />
 
-        {/* <Route
+        <Route
           path="/chat"
           element={
             <ProtectedRoute>
               <Chat />
             </ProtectedRoute>
           }
-        /> */}
+        />
       </Routes>
     </BrowserRouter>
   );
